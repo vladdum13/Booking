@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,6 +73,7 @@ public class MySignUpActivity extends AppCompatActivity {
                 user.put("email", email);
                 user.put("password", password);
                 user.put("phone", phone);
+                user.put("reservation_ids", Collections.emptyList());
 
                 firestore.collection("clients")
                                 .add(user)
