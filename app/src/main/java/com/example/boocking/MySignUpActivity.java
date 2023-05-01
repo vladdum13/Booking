@@ -6,19 +6,27 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MySignUpActivity extends AppCompatActivity {
 
+    private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
     private EditText editTextName,editTextPassword, editTextVerify, editTextEmail, editTextPhone;
     private Button signup, back;
@@ -28,6 +36,7 @@ public class MySignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_sign_up);
 
+        firestore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
         editTextName = findViewById(R.id.signup_name);
@@ -57,6 +66,27 @@ public class MySignUpActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Passwords don't match", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                Map<String, Object> user = new HashMap<>();
+                user.put("name", name);
+                user.put("email", email);
+                user.put("password", password);
+                user.put("phone", phone);
+
+                firestore.collection("clients")
+                                .add(user)
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                            @Override
+                                            public void onSuccess(DocumentReference documentReference) {
+                                                Log.d("firestore_add_success", "DocumentSnapshot added with ID: " + documentReference.getId());
+                                            }
+                                        })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Log.w("firestore_add_failure", "Error adding document", e);
+                                                    }
+                                                });
 
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
