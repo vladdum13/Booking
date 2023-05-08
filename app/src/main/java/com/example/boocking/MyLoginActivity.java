@@ -53,7 +53,7 @@ public class MyLoginActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     Intent intent = new Intent(getApplicationContext(), SearchPage.class);
                                     startActivity(intent);
-                                    finish();
+                                    finishAffinity();
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Authentication failed.",
                                             Toast.LENGTH_SHORT).show();
@@ -66,8 +66,7 @@ public class MyLoginActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
+                onBackPressed();
                 finish();
             }
         });
