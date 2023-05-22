@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:theme="@style/Base.Theme.Boocking"
     tools:context=".SearchPage">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -52,8 +53,8 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
-        android:paddingBottom="?attr/actionBarSize"
         android:fillViewport="true"
+        android:paddingBottom="?attr/actionBarSize"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

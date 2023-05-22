@@ -10,15 +10,17 @@ public class Hotel implements Serializable {
     private String id_manager;
     private String location;
     private Integer rating;
+    private String image;
 
     public Hotel() {}
 
-    public Hotel(String name, String id_hotel, String id_manager, String location, Integer rating) {
+    public Hotel(String name, String id_hotel, String id_manager, String location, Integer rating, String image) {
         this.name = name;
         this.id_hotel = id_hotel;
         this.id_manager = id_manager;
         this.location = location;
         this.rating = rating;
+        this.image = image;
     }
 
     public Hotel(Hotel hotel) {
@@ -27,6 +29,7 @@ public class Hotel implements Serializable {
         this.id_manager = hotel.getId_manager();
         this.location = hotel.getLocation();
         this.rating = hotel.getRating();
+        this.image = hotel.image;
     }
 
     public String getName() {
@@ -67,6 +70,14 @@ public class Hotel implements Serializable {
 
     public void setRating(Integer rating) {
         this.rating = rating;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @NonNull

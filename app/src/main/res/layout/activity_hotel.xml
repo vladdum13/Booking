@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:theme="@style/Base.Theme.Boocking"
     tools:context=".HotelActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -51,8 +53,8 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
-        android:paddingBottom="?attr/actionBarSize"
         android:fillViewport="true"
+        android:paddingBottom="?attr/actionBarSize"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +73,8 @@
                 android:id="@+id/hotel_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/black" />
 
             <ImageView
                 android:id="@+id/hotel_image"
