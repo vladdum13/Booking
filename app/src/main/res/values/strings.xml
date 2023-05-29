@@ -20,6 +20,8 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="date_select">Select Dates</string>
+    <string name="select_dates">Please select dates for your stay</string>
+    <string name="book">Book Your Stay</string>
     <string name="old_password">Old Password</string>
     <string name="change_password">Change Password</string>
     <string-array name="names_spinner">

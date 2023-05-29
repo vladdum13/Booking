@@ -86,10 +86,6 @@ public class SearchPage extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Hotel hotel = document.toObject(Hotel.class);
                                 listHotel(hotel, layoutParams_img, layoutParams_desc);
-                                listHotel(hotel, layoutParams_img, layoutParams_desc);
-                                listHotel(hotel, layoutParams_img, layoutParams_desc);
-                                listHotel(hotel, layoutParams_img, layoutParams_desc);
-                                listHotel(hotel, layoutParams_img, layoutParams_desc);
                             }
                         } else {
                             Log.w("hotel_info_err", "Error getting documents.", task.getException());

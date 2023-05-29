@@ -116,11 +116,6 @@ public class HotelActivity extends AppCompatActivity {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Room room = document.toObject(Room.class);
                         listRoom(hotel, room, layoutParams_img, layoutParams_desc);
-                        listRoom(hotel, room, layoutParams_img, layoutParams_desc);
-                        listRoom(hotel, room, layoutParams_img, layoutParams_desc);
-                        listRoom(hotel, room, layoutParams_img, layoutParams_desc);
-                        listRoom(hotel, room, layoutParams_img, layoutParams_desc);
-
                     }
                 } else {
                     Log.w("room_err", "Error getting documents: ", task.getException());

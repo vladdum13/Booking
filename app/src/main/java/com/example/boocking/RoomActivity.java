@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -23,23 +24,35 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.boocking.data.Hotel;
+import com.example.boocking.data.Reservation;
 import com.example.boocking.data.Room;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 
 public class RoomActivity extends AppCompatActivity {
 
@@ -53,7 +66,9 @@ public class RoomActivity extends AppCompatActivity {
     private ImageView imageView;
     private TextView nameView;
     private TableLayout table;
-    private Button button;
+    private TextView dateText;
+    private Button dates_button;
+    private Button book_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +92,12 @@ public class RoomActivity extends AppCompatActivity {
         imageView = findViewById(R.id.hotel_image);
         nameView = findViewById(R.id.hotel_name);
         table = findViewById(R.id.tableLayout);
-        button = findViewById(R.id.date_button);
+        dateText = findViewById(R.id.date_text);
+        dates_button = findViewById(R.id.date_button);
+        book_button = findViewById(R.id.book_button);
 
         LinearLayout.LayoutParams layoutParams_room = new LinearLayout.LayoutParams(
                 1000, 800);
-        LinearLayout.LayoutParams layoutParams_button = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         Intent intent = getIntent();
         Hotel hotel = (Hotel) intent.getSerializableExtra("hotel_data");
@@ -115,15 +130,68 @@ public class RoomActivity extends AppCompatActivity {
         populateTable();
         populateTable2(room);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        dates_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CalendarConstraints.Builder constraints = new CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now());
-                MaterialDatePicker picker = MaterialDatePicker.Builder.datePicker()
-                        .setTitleText("Select dates")
-                        .setCalendarConstraints(constraints.build())
-                        .build();
-                picker.show(RoomActivity.this.getSupportFragmentManager(), "TAG");
+                MaterialDatePicker.Builder<androidx.core.util.Pair<Long, Long>> materialDateBuilder = MaterialDatePicker.Builder.dateRangePicker();
+                materialDateBuilder.setTitleText("Select dates")
+                        .setCalendarConstraints(constraints.build());
+                MaterialDatePicker picker = materialDateBuilder.build();
+                picker.show(RoomActivity.this.getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
+
+                picker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener() {
+                    @Override
+                    public void onPositiveButtonClick(Object selection) {
+                        dateText.setText(picker.getHeaderText());
+                        book_button.setEnabled(true);
+                    }
+                });
+            }
+        });
+
+        book_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Random random = new Random();
+                String reservationId = random.ints(97, 123)
+                        .limit(5)
+                        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                        .toString();
+                int roomNumber = random.nextInt(999);
+                Date date1 = new Date();
+                Reservation reservation = new Reservation(date1, date1, hotel.getName(), reservationId, roomNumber, "pending");
+                db.collection("reservations")
+                        .add(reservation)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Log.d("reservation_add_success", "DocumentSnapshot added with ID: " + documentReference.getId());
+                            }
+                        }) .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("reservation_add_failure", "Error adding document ", e);
+                            }
+                        });
+
+                Query userQuery = db.collection("clients").whereEqualTo("email", mAuth.getCurrentUser().getEmail());
+                userQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()) {
+                            for(QueryDocumentSnapshot document : task.getResult()) {
+                                ArrayList<String> ids = (ArrayList<String>) document.getData().get("reservation_ids");
+                                ids.add(reservationId);
+                                db.collection("clients").document(document.getId()).update("reservation_ids", ids);
+                            }
+                        }
+                    }
+                });
+
+                Intent intent = new Intent(getApplicationContext(), SearchPage.class);
+                startActivity(intent);
+                finishAffinity();
             }
         });
 
